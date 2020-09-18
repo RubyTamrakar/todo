@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+#  springboot:
+#    build: .
+##    image: registry.gitlab.com/idgst/springboot-mongo-demo:latest
+#    restart: always
+#    container_name: springboot
+#    ports:
+#      - 8182:8080
+#    working_dir: /opt/app
+#    depends_on:
+#      - mongo
+
+  mongo:
+    image: mongo
+    container_name: springboot-mongo
+    env_file: .env
+    ports:
+      - 27017:27017
+      - 27018:27018
+      - 27019:27019
+    volumes:
+      - data5:/data/db
+    #      - $PWD/data/springboot-mongo-bkp:/data/bkp
+    restart: always
+
+  db_client:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8082:8081
+    env_file: .env
+    depends_on:
+      - mongo
+
+  redis:
+    image: "redis:alpine"
+    command: redis-server --requirepass sOmE_sEcUrE_pAsS
+    env_file: .env
+    ports:
+      - "6379:6379"
+    volumes:
+      - $PWD/redis-data:/var/lib/redis
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+
+volumes:
+  data5:
